@@ -11,7 +11,7 @@ COPY codes/ /var/www/html/
 RUN a2enmod rewrite
 
 # 安装CI4需要的PHP扩展
-RUN apt-get -y update && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev libicu-dev
+RUN apt-get -y update && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev libicu-dev git zip unzip
 RUN rm -r /var/lib/apt/lists/* 
 RUN docker-php-ext-install -j$(nproc) intl 
 RUN pecl install mongodb && docker-php-ext-enable mongodb
