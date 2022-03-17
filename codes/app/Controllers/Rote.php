@@ -4,6 +4,8 @@ namespace App\Controllers;
 use MongoDB;
 use Parsedown;
 use Config;
+use \App\Entities\RoteEnt;
+use \App\Models\RoteModel;
 
 
 class Rote extends BaseController
@@ -33,12 +35,12 @@ class Rote extends BaseController
     public function edit(string $id = '')
     {
         $this->failNotFound('找不到文档');
-        //
     }
 
     public function show(string $id = '')
     {
-        $data = $this->DB->findOne(['_id'=>new MongoDB\BSON\ObjectId($id)]);
+        $rote = new RoteModel();
+        $data = $rote->getOne($id);
         if (!$data){
            return  $this->failNotFound('找不到文档');
         }
@@ -64,8 +66,8 @@ class Rote extends BaseController
 
     public function delete(string $id = '')
     {
-        //
-        $this->failResourceGone($description);
+        $rote = new RoteModel();
+        $data = $rote->getOne($id);
         $this->respondDeleted($data);
     }
 }
