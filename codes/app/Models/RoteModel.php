@@ -11,7 +11,9 @@ class RoteModel extends Model
 
     public function __construct()
     {
-        $this->DB = (new MongoDB\Client)->local->rotes;
+        $this->DB = (new MongoDB\Client(
+            "mongodb://root:trpg_linker@trpg-linker_mongo_1.test-net:27017"
+            ))->local->rotes;
     }
 
     public function getOne(string $id = '')
