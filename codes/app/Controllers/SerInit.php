@@ -23,15 +23,18 @@ class SerInit extends BaseController
 
     public function index()
     {
+        $this->DB->dropCollection('rotes');
         $res = $this->DB->createCollection('rotes');
+        
+        return $res;
     }
 
-    public function dropTable()
+    public function drop_table()
     {
-        return $this->DB->dropCollection('rotes');
+        //
     }
 
-    public function getEnv()
+    public function get_env()
     {
         $grp = config('database')->defaultGroup;
         $db = config('database')->$grp['database'];
