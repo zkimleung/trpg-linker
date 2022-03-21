@@ -81,7 +81,7 @@ class Database extends Config
         'hostname' => 'trpg-linker_mongo_1.test-net:27017',
         'username' => 'root',
         'password' => 'trpg_linker',
-        'database' => ':local:',
+        'database' => 'local',
         'DBDriver' => 'Mongo',
         'DBPrefix' => 'db_',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE FOR CI DEVS
         'pConnect' => false,

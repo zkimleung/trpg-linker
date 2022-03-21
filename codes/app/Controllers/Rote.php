@@ -12,13 +12,11 @@ class Rote extends BaseController
 {
     use \CodeIgniter\API\ResponseTrait;
     private $DB = null;
-    public function __construct(){
-        $this->DB = (new MongoDB\Client)->local->rotes;
-    }
 
     public function index()
     {
-        $list = $this->DB->find();
+        $rote = new RoteModel();
+        $list = $rote->getAll();
         foreach ($list as $document) {
             // $doc[] = $document;
             echo $document['_id'];

@@ -7,6 +7,7 @@ use Config;
 
 class SerInit extends BaseController
 {
+    use \CodeIgniter\API\ResponseTrait;
     private $DB = null;
     public function __construct(){
         $grp = config('database')->defaultGroup;
@@ -22,7 +23,6 @@ class SerInit extends BaseController
 
     public function index()
     {
-        echo 123;exit;
         $res = $this->DB->createCollection('rotes');
     }
 
@@ -31,8 +31,22 @@ class SerInit extends BaseController
         return $this->DB->dropCollection('rotes');
     }
 
-    public function test()
+    public function getEnv()
     {
-        var_dump($this->DB);
+        $grp = config('database')->defaultGroup;
+        $db = config('database')->$grp['database'];
+        $host = sprintf(
+            "mongodb://%s:%s@%s",
+            config('database')->$grp['username'],
+            config('database')->$grp['password'],
+            config('database')->$grp['hostname']
+        );
+        $data = [
+            ENVIRONMENT,
+            $grp,
+            $db,
+            $host
+        ];
+        return $this->respond($data,200);
     }
 }

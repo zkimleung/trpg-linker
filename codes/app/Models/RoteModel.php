@@ -11,9 +11,20 @@ class RoteModel extends Model
 
     public function __construct()
     {
-        $this->DB = (new MongoDB\Client(
-            "mongodb://root:trpg_linker@trpg-linker_mongo_1.test-net:27017"
-            ))->local->rotes;
+        $grp = config('database')->defaultGroup;
+        $db = config('database')->$grp['database'];
+        $host = sprintf(
+            "mongodb://%s:%s@%s",
+            config('database')->$grp['username'],
+            config('database')->$grp['password'],
+            config('database')->$grp['hostname']
+        );
+        $this->DB = (new MongoDB\Client($host))->$db;
+    }
+
+    public function getAll()
+    {
+        return $this->DB->find();
     }
 
     public function getOne(string $id = '')
