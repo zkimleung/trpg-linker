@@ -52,10 +52,10 @@ CI_ENVIRONMENT = production
 # database.tests.DBDriver = MySQLi
 # database.tests.DBPrefix =
 
-database.default.hostname = trpg-linker_mongo_1.test-net:27017
-database.default.database = local
-database.default.username = root
-database.default.password = trpg_linker
+database.prod.hostname = trpg-linker_mongo_1.test-net:27017
+database.prod.database = local
+database.prod.username = root
+database.prod.password = trpg_linker
 # database.tests.DBDriver = MySQLi
 # database.tests.DBPrefix =
 

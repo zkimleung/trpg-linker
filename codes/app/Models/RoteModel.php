@@ -11,13 +11,13 @@ class RoteModel extends Model
 
     public function __construct()
     {
-        $grp = config('database')->defaultGroup;
-        $db = config('database')->$grp['database'];
+        $grp = config('Database')->defaultGroup;
+        $db = config('Database')->$grp['database'];
         $host = sprintf(
             "mongodb://%s:%s@%s",
-            config('database')->$grp['username'],
-            config('database')->$grp['password'],
-            config('database')->$grp['hostname']
+            config('Database')->$grp['username'],
+            config('Database')->$grp['password'],
+            config('Database')->$grp['hostname']
         );
         $this->DB = (new MongoDB\Client($host))->$db;
     }
