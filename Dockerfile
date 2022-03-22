@@ -38,8 +38,6 @@ RUN docker-php-ext-install -j$(nproc) intl
 RUN pecl install mongodb && docker-php-ext-enable mongodb
 # 初始化项目扩展
 RUN chown -R www-data:www-data /var/www && cp env .env
-RUN curl -sS https://getcomposer.org/installer | php && php composer.phar update
+RUN php composer.phar update
 
 EXPOSE 8080
-
-# LABEL "traefik.http.routers.ci4.rule"="Host(`ci4.trpg-linker.local`)"

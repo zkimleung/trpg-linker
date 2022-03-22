@@ -10,6 +10,10 @@ class SerInit extends BaseController
     use \CodeIgniter\API\ResponseTrait;
     private $DB = null;
 
+    private $collections = [
+        'rotes'
+    ];
+
     private function set_db(){
         $grp = config('Database')->defaultGroup;
         $db = config('Database')->$grp['database'];
@@ -25,10 +29,12 @@ class SerInit extends BaseController
     public function index()
     {
         $this->set_db();
-        $this->DB->dropCollection('rotes');
-        $res = $this->DB->createCollection('rotes');
-        
-        return $res;
+        foreach ($this->collections as $col){
+            $this->DB->dropCollection($col);
+            $res[$col] = $this->DB->createCollection($col);
+        }
+
+        return $this->respond($res,200);
     }
 
     public function get_env()
