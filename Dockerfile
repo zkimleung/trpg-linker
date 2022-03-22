@@ -2,8 +2,6 @@
 # https://hub.docker.com/_/php
 FROM php:7.4-apache
 
-ENV PORT 8080
-
 # 将本地代码复制到容器内
 COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY edit-apache-config /usr/local/bin
@@ -39,5 +37,3 @@ RUN pecl install mongodb && docker-php-ext-enable mongodb
 # 初始化项目扩展
 RUN chown -R www-data:www-data /var/www && cp env .env
 RUN php composer.phar update
-
-EXPOSE 8080
