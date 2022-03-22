@@ -3,10 +3,10 @@
 use CodeIgniter\Model;
 use MongoDB;
 
-class RoteModel extends Model
+class RoteModel
 {
-    private $DB = null;
-
+    private $mongo = null;
+    protected $table = "rotes";
     private $_id = null;
 
     public function __construct()
@@ -19,18 +19,19 @@ class RoteModel extends Model
             config('Database')->$grp['password'],
             config('Database')->$grp['hostname']
         );
-        $this->DB = (new MongoDB\Client($host))->$db;
+        $table = $this->table;
+        $this->mongo = (new MongoDB\Client($host))->$db->$table;
     }
 
     public function getAll()
     {
-        return $this->DB->find();
+        return $this->mongo->find();
     }
 
     public function getOne(string $id = '')
     {
         $this->setId($id);
-        return $this->DB->findOne(['_id'=>$this->_id]);
+        return $this->mongo->findOne(['_id'=>$this->_id]);
     }
 
     private function setID($id)
@@ -44,10 +45,10 @@ class RoteModel extends Model
             $this->setId($id);
         }
         if (!$this->_id && !$id){
-            $insertOneResult = $this->DB->insertOne($data);
+            $insertOneResult = $this->mongo->insertOne($data);
             return $insertOneResult->getInsertedId();
         }else{
-            $updateRst = $this->DB->updateOne(
+            $updateRst = $this->mongo->updateOne(
                 ['_id' => $this->_id],
                 ['$set' => $data]
             );

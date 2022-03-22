@@ -17,11 +17,7 @@ class Rote extends BaseController
     {
         $rote = new RoteModel();
         $list = $rote->getAll();
-        foreach ($list as $document) {
-            // $doc[] = $document;
-            echo $document['_id'];
-        }
-        return $this->respond($doc, 200);
+        return $this->respond($list, 200);
     }
 
     public function new()

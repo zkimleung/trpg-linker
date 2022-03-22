@@ -11,7 +11,28 @@ COPY codes/ /var/www/html/
 RUN a2enmod rewrite
 
 # 安装CI4需要的PHP扩展
-RUN apt-get -y update && apt-get install -y iputils-ping libcurl4-openssl-dev libfreetype6-dev libjpeg62-turbo-dev libpng-dev libicu-dev pkg-config libssl-dev zip unzip
+RUN cp /etc/apt/sources.list /etc/apt/echosources.list.bck && \
+    echo "" > /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian/ bullseye main non-free contrib'   >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian/ bullseye main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian-security/ bullseye-security main' >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian-security/ bullseye-security main' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' >> /etc/apt/sources.list && \
+    apt-get -y update && \
+    apt-get install -y \
+        iputils-ping \
+        libcurl4-openssl-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        libicu-dev \
+        pkg-config \
+        libssl-dev \
+        zip \
+        unzip
 RUN rm -r /var/lib/apt/lists/* 
 RUN docker-php-ext-install -j$(nproc) intl
 RUN pecl install mongodb && docker-php-ext-enable mongodb
