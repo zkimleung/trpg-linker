@@ -14,7 +14,8 @@
 # ENVIRONMENT
 #--------------------------------------------------------------------
 
-# CI_ENVIRONMENT = production
+CI_ENVIRONMENT = production
+# CI_ENVIRONMENT = development
 
 #--------------------------------------------------------------------
 # APP
@@ -48,6 +49,13 @@
 # database.tests.database = ci4
 # database.tests.username = root
 # database.tests.password = root
+# database.tests.DBDriver = MySQLi
+# database.tests.DBPrefix =
+
+database.prod.hostname = trpg-linker_mongo_1.test-net:27017
+database.prod.database = local
+database.prod.username = root
+database.prod.password = trpg_linker
 # database.tests.DBDriver = MySQLi
 # database.tests.DBPrefix =
 

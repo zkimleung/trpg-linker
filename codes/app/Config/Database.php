@@ -32,11 +32,11 @@ class Database extends Config
      */
     public $default = [
         'DSN'      => '',
-        'hostname' => 'localhost',
+        'hostname' => 'localhost:27017',
         'username' => '',
         'password' => '',
-        'database' => '',
-        'DBDriver' => 'MySQLi',
+        'database' => 'local',
+        'DBDriver' => 'Mongo',
         'DBPrefix' => '',
         'pConnect' => false,
         'DBDebug'  => (ENVIRONMENT !== 'production'),
@@ -76,6 +76,26 @@ class Database extends Config
         'port'     => 3306,
     ];
 
+    public $prod = [
+        'DSN'      => '',
+        'hostname' => 'trpg-linker_mongo_1.test-net:27017',
+        'username' => 'root',
+        'password' => 'trpg_linker',
+        'database' => 'local',
+        'DBDriver' => 'Mongo',
+        'DBPrefix' => 'db_',  // Needed to ensure we're working correctly with prefixes live. DO NOT REMOVE FOR CI DEVS
+        'pConnect' => false,
+        'DBDebug'  => true,
+        'charset'  => 'utf8',
+        'DBCollat' => 'utf8_general_ci',
+        'swapPre'  => '',
+        'encrypt'  => false,
+        'compress' => false,
+        'strictOn' => false,
+        'failover' => [],
+        'port'     => 3306,
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -85,6 +105,9 @@ class Database extends Config
         // we don't overwrite live data on accident.
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
+        }
+        if (ENVIRONMENT === 'production') {
+            $this->defaultGroup = 'prod';
         }
     }
 }
