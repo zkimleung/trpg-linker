@@ -1,5 +1,6 @@
 <?php namespace App\Models;
 
+use CodeIgniter\I18n\Time;
 use CodeIgniter\Model;
 use MongoDB;
 
@@ -7,6 +8,12 @@ class RoteModel
 {
     private $mongo = null;
     protected $table = "rotes";
+    protected $allowedFields =[
+        'profile','assets','skill','attribute'
+    ];
+    protected $returnType    = 'App\Entities\RoteEnt';
+    protected $useTimestamps = true;
+    
     private $_id = null;
 
     public function __construct()
@@ -31,7 +38,10 @@ class RoteModel
     public function getOne(string $id = '')
     {
         $this->setId($id);
-        return $this->mongo->findOne(['_id'=>$this->_id]);
+        $doc = $this->mongo->findOne(['_id'=>$this->_id]);
+        $doc['id'] = (string) $doc->_id;
+        unset($doc->_id);
+        return $doc;
     }
 
     private function setID($id)
@@ -44,7 +54,9 @@ class RoteModel
         if ($id) {
             $this->setId($id);
         }
+        $data->update_at =  Time::now('Asia/Shanghai', 'zh-CN');
         if (!$this->_id && !$id){
+            $data->create_at =  Time::now('Asia/Shanghai', 'zh-CN');
             $insertOneResult = $this->mongo->insertOne($data);
             return $insertOneResult->getInsertedId();
         }else{
@@ -62,8 +74,14 @@ class RoteModel
 
     public function delOne(string $id = '')
     {
-        $this->setId($id);
+        if ($id) {
+            $this->setId($id);
+        }
         $deleteResult = $collection->deleteOne(['_id' => $this->_id]);
-        return $deleteResult->getDeletedCount();
+        
+        if ($deleteResult->getDeletedCount()<1){
+            log_message("error",$deleteResult);
+        }
+        return $deleteResult->isAcknowledged();
     }
 }
