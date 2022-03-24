@@ -12,7 +12,7 @@ class RoteEnt extends Entity
     ];
 
     protected $datamap = [
-        '_id' => 'id'
+        'id' => '_id'
     ];
 
     protected $casts = [

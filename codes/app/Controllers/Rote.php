@@ -1,18 +1,20 @@
 <?php
 
 namespace App\Controllers;
-use MongoDB;
 use Parsedown;
 use Config;
+
 use \App\Entities\RoteEnt;
 use \App\Entities\RoteAttrEnt;
+use \App\Entities\RoteEntSkill;
+
 use \App\Models\RoteModel;
+use \App\Models\SkillTreeModel;
 
 
 class Rote extends BaseController
 {
     use \CodeIgniter\API\ResponseTrait;
-    private $DB = null;
 
     public function index()
     {
@@ -23,12 +25,15 @@ class Rote extends BaseController
 
     public function new()
     {
-        $data = [];
+        //技能树
+        $tree_mod = new SkillTreeModel();
+        $data = $tree_mod->getTree();
         return $this->respond($data, 200);
     }
 
     public function edit(string $id = '')
     {
+        //查人物
         $rote = new RoteModel();
         $data = $rote->getOne($id);
         if (!$data){
@@ -39,6 +44,7 @@ class Rote extends BaseController
 
     public function show(string $id = '')
     {
+        //查人物
         $rote = new RoteModel();
         $data = $rote->getOne($id);
         if (!$data){
@@ -49,28 +55,44 @@ class Rote extends BaseController
 
     public function create()
     {
-        $roteMod= new RoteModel();
         $data = $this->request->getJSON(true);
-        
+        //初始化属性点
         $attrs = new RoteAttrEnt($data['attribute']);
         $attrs->HP = $attrs->getAttrDetails('HP')['origin'];
         $attrs->MP = $attrs->getAttrDetails('MP')['origin'];
         $attrs->MOV = $attrs->getAttrDetails('MOV')['origin'];
         $attrs->Sanity = $attrs->getAttrDetails('Sanity')['origin'];
-        $extend = $attrs->setAge(49,70,75,85);
-        return $this->respond($extend, 200);
-    
-        
+        //初始化技能点
+        $tree_mod = new SkillTreeModel();
+        $skill = new RoteEntSkill($data['skill']);
+        $tree = $tree_mod->getTree();
+        foreach($data['skill'] as $keywork => $obj){
+            if (is_object($tree->$keywork)){
+                $skill->setSkillList($keywork,(array) $tree->$keywork);
+            };
+            if(is_array($obj)){
+                $list = $skill->fillSkillList($keywork,$obj);
+                $skill->$keywork = $list;
+            }else{
+                $skill->$keywork = $obj;
+            }
+        }
+        //封装角色
         $rote = new RoteEnt();
-        $rote->fill($data);
         $rote->attribute = $attrs;
+        $rote->skill = $skill;
+
+        return $this->respond($rote,200);
+
+        $roteMod= new RoteModel();
         $id = $roteMod->saveOne($rote);
         if (!$id){
             return $this->failResourceExists($description);
         }
+        $rote->id = $id;
         return $this->respondCreated([
             "id" => (string) $id,
-            "change_role" => $extend
+            "rote" => $rote
         ], 201);
     }
 
@@ -78,7 +100,7 @@ class Rote extends BaseController
     {
         $roteMod= new RoteModel();
         $data = $this->request->getJSON(true);
-        
+
         $attrs = new RoteAttrEnt($data['attribute']);
 
         return $this->respond($attrs, 200);
@@ -93,5 +115,25 @@ class Rote extends BaseController
         }
         $res = $rote->delOne();
         $this->respondDeleted($data);
+    }
+
+    public function test_funx()
+    {
+        $tree_mod = new SkillTreeModel();
+        $tree = $tree_mod->getTree();
+        $data = $this->request->getJSON(true);
+        $res = new RoteEntSkill();
+        foreach($data as $keywork => $obj){
+            if (is_object($tree->$keywork)){
+                $res->setSkillList($keywork,(array) $tree->$keywork);
+            }
+            if(is_array($obj)){
+                $list = $res->fillSkillList($keywork,$obj);
+                $res->$keywork = $list;
+            }else{
+                $res->$keywork = $obj;
+            }
+        }
+        return $this->respond($res,200);
     }
 }
