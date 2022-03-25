@@ -7,7 +7,6 @@ class RoteEnt extends Entity
     protected $attributes = [
         'attribute' => null,
         'skill' => null,
-        'assets' => null,
         'profile' => null
     ];
 
@@ -17,7 +16,6 @@ class RoteEnt extends Entity
 
     protected $casts = [
         'attribute' => 'json',
-        'assets' => 'json',
         'skill' => 'json',
         'profile' => 'json'
     ];

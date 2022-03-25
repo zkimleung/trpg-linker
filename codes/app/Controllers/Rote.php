@@ -6,7 +6,7 @@ use Config;
 
 use \App\Entities\RoteEnt;
 use \App\Entities\RoteAttrEnt;
-use \App\Entities\RoteEntSkill;
+use \App\Entities\RoteSkillEnt;
 
 use \App\Models\RoteModel;
 use \App\Models\SkillTreeModel;
@@ -64,7 +64,7 @@ class Rote extends BaseController
         $attrs->Sanity = $attrs->getAttrDetails('Sanity')['origin'];
         //初始化技能点
         $tree_mod = new SkillTreeModel();
-        $skill = new RoteEntSkill();
+        $skill = new RoteSkillEnt();
         $tree = $tree_mod->getTree();
         foreach($data['skill'] as $keywork => $obj){
             if (is_object($tree->$keywork)){
@@ -77,6 +77,7 @@ class Rote extends BaseController
                 $skill->$keywork = $obj;
             }
         }
+        $skill->sycSkillByAttr($data['attribute']);
         //封装角色
         $rote = new RoteEnt();
         $rote->attribute = $attrs;
@@ -123,7 +124,7 @@ class Rote extends BaseController
         $tree_mod = new SkillTreeModel();
         $tree = $tree_mod->getTree();
         $data = $this->request->getJSON(true);
-        $res = new RoteEntSkill();
+        $res = new RoteSkillEnt();
         foreach($data as $keywork => $obj){
             if (is_object($tree->$keywork)){
                 $res->setSkillList($keywork,(array) $tree->$keywork);

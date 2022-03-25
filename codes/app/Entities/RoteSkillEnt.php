@@ -2,7 +2,7 @@
 
 use CodeIgniter\Entity;
 
-class RoteEntSkill extends Entity
+class RoteSkillEnt extends Entity
 {
     protected $attributes = [
         'credit_rating' => 0,    //信用评级
@@ -30,7 +30,9 @@ class RoteEntSkill extends Entity
                 'fight' => 25    //斗殴
             ],
             'f2' => null,
-            'f3' => null
+            'f3' => null,
+            'damage_deepens' => '',   //伤害加深
+            'physique' => 0       //体格
         ],
         'shoot' => [             //射击
             'sh1' => [
@@ -207,6 +209,73 @@ class RoteEntSkill extends Entity
         }
         
         return $list;
+    }
+
+    public function sycSkillByAttr(array $attrs = []){
+        $this->sycTongue($attrs['EDU']);
+        $this->sycDodge($attrs['DEX']);
+        $this->sycFighting($attrs['STR'] + $attrs['SIZ']);
+    }
+
+    private function sycTongue(int $EDU=0)
+    {
+        $this->tongue = $EDU;
+    }
+
+    private function sycDodge(int $DEX=0)
+    {
+        $this->dodge = (int)($DEX / 2);
+    }
+
+    private function sycFighting(int $sum=0)
+    {
+        switch (true) {
+            case $sum < 65:
+                $dam['damage_deepens'] = '-2';
+                $dam['physique'] = -2;
+                break;
+            
+            case $sum < 85:
+                $dam['damage_deepens'] = '-1';
+                $dam['physique'] = -1;
+                break;
+            
+            case $sum < 125:
+                $dam['damage_deepens'] = '0';
+                $dam['physique'] = 0;
+                break;
+            
+            case $sum < 165:
+                $dam['damage_deepens'] = '+1D4';
+                $dam['physique'] = 1;
+                break;
+
+            case $sum < 205:
+                $dam['damage_deepens'] = '+1D6';
+                $dam['physique'] = 2;
+                break;
+
+            case $sum < 285:
+                $dam['damage_deepens'] = '+2D6';
+                $dam['physique'] = 3;
+                break;
+
+            case $sum < 365:
+                $dam['damage_deepens'] = '+3D6';
+                $dam['physique'] = 4;
+                break;
+
+            case $sum < 445:
+                $dam['damage_deepens'] = '+4D6';
+                $dam['physique'] = 5;
+                break;
+
+            default:
+                $dam['damage_deepens'] = '+5D6';
+                $dam['physique'] = 6;
+                break;
+        }
+        $this->fistfight = array_merge($this->fistfight, $dam);
     }
 
 }
