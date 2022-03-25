@@ -64,7 +64,7 @@ class Rote extends BaseController
         $attrs->Sanity = $attrs->getAttrDetails('Sanity')['origin'];
         //初始化技能点
         $tree_mod = new SkillTreeModel();
-        $skill = new RoteEntSkill($data['skill']);
+        $skill = new RoteEntSkill();
         $tree = $tree_mod->getTree();
         foreach($data['skill'] as $keywork => $obj){
             if (is_object($tree->$keywork)){
@@ -81,6 +81,7 @@ class Rote extends BaseController
         $rote = new RoteEnt();
         $rote->attribute = $attrs;
         $rote->skill = $skill;
+        $rote->fill();
 
         return $this->respond($rote,200);
 

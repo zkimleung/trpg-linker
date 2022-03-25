@@ -11,9 +11,9 @@ class RoteEntSkill extends Entity
         'valuation' => 5,        //估价
         'archaeology' => 1,      //考古学
         'skills' => [            //技艺
-            's1' => [],
-            's2' => [],
-            's3' => [],
+            's1' => null,
+            's2' => null,
+            's3' => null,
         ],
         'charm' => 15,           //魅惑
         'clamber' => 20,         //攀爬
@@ -29,24 +29,24 @@ class RoteEntSkill extends Entity
             'f1' => [
                 'fight' => 25    //斗殴
             ],
-            'f2' => [],
-            'f3' => []
+            'f2' => null,
+            'f3' => null
         ],
         'shoot' => [             //射击
             'sh1' => [
                 'pistol' => 20   //手枪
             ],
-            'sh2' => [],
-            'sh3' => []
+            'sh2' => null,
+            'sh3' => null
         ], 
         'aid' => 30,             //急救
         'history' => 5,          //历史
         'intimidate' => 15,      //恐吓
         'caper' => 20,           //跳跃
         'language' => [          //外语
-            'l1' => [],
-            'l2' => [],
-            'l3' => []
+            'l1' => null,
+            'l2' => null,
+            'l3' => null
         ],
         'tongue' => 50,          //母语
         'throwing' => 20,        //投掷
@@ -63,15 +63,15 @@ class RoteEntSkill extends Entity
         'heavy_machinery_operation' => 1,   //操作重型机械
         'persuade' => 10,        //说服
         'drive' => [             //驾驶
-            'd1' => []
+            'd1' => null
         ],
         'psychoanalysis' => 1,   //精神分析
         'psychology' => 10,      //心理学
         'ride' => 5,             //骑乘
         'science' => [           //科学
-            'sc1' => [],
-            'sc2' => [],
-            'sc3' => []
+            'sc1' => null,
+            'sc2' => null,
+            'sc3' => null
         ],
         'magic_hands' => 10,     //妙手
         'investigation' => 25,   //侦查
@@ -192,11 +192,11 @@ class RoteEntSkill extends Entity
                         if (isset($this->$skill_type[$key])){
                             $list[$kk] = [$key => $value];
                             $count--;
-                            break;
+                            break 1;
                         }elseif($skill_type == 'language_list'){
                             $list[$kk] = [$key => $value];
                             $count--;
-                            break;
+                            break 1;
                         }
                     }
                 }
