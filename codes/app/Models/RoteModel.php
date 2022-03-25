@@ -15,6 +15,7 @@ class RoteModel
     protected $useTimestamps = true;
     
     private $_id = null;
+    private $now = null;
 
     public function __construct()
     {
@@ -28,6 +29,8 @@ class RoteModel
         );
         $table = $this->table;
         $this->mongo = (new MongoDB\Client($host))->$db->$table;
+        
+        $this->now = Time::now('Asia/Shanghai', 'zh-CN');
     }
 
     public function getAll()
@@ -54,10 +57,10 @@ class RoteModel
         if ($id) {
             $this->setId($id);
         }
-        $data->update_at =  Time::now('Asia/Shanghai', 'zh-CN');
+        $data->update_at = $this->now->toDateTimeString();
         if (!$this->_id && !$id){
-            $data->create_at =  Time::now('Asia/Shanghai', 'zh-CN');
-            $insertOneResult = $this->mongo->insertOne($data);
+            $data->create_at =  $this->now->toDateTimeString();
+            $insertOneResult = $this->mongo->insertOne($data->getEntsData());
             return $insertOneResult->getInsertedId();
         }else{
             $updateRst = $this->mongo->updateOne(

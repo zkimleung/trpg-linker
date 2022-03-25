@@ -7,6 +7,7 @@ use Config;
 use \App\Entities\RoteEnt;
 use \App\Entities\RoteAttrEnt;
 use \App\Entities\RoteSkillEnt;
+use \App\Entities\RoteProfileEnt;
 
 use \App\Models\RoteModel;
 use \App\Models\SkillTreeModel;
@@ -78,20 +79,24 @@ class Rote extends BaseController
             }
         }
         $skill->sycSkillByAttr($data['attribute']);
+        //初始化角色背景
+        $profile = new RoteProfileEnt();
+        $profile->idiosyncrasy = $profile->sycIndyList();
         //封装角色
         $rote = new RoteEnt();
         $rote->attribute = $attrs;
         $rote->skill = $skill;
+        $rote->profile = $profile;
         $rote->fill();
 
-        return $this->respond($rote,200);
+        // return $this->respond($rote,200);
 
         $roteMod= new RoteModel();
         $id = $roteMod->saveOne($rote);
         if (!$id){
             return $this->failResourceExists($description);
         }
-        $rote->id = $id;
+        $rote->id = (string) $id;
         return $this->respondCreated([
             "id" => (string) $id,
             "rote" => $rote
