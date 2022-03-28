@@ -4,8 +4,6 @@ use CodeIgniter\Entity;
 
 class RoteAttrEnt extends Entity
 {
-    private $age = 18;
-
     protected $attributes = [
         "STR"=>0, //力量
         "DEX"=>0, //敏捷
@@ -71,22 +69,20 @@ class RoteAttrEnt extends Entity
                 ];
                 break;
         }
-
+        $this->$attr = $org;
         return [
             "origin" => $org,
             "current" => (isset($this->$attr))?$this->$attr:$org
         ];
     }
 
-    public function setAge(int $age = 18, int $edu_roll = 0, int $luky = 0, int $luky2 = 0){
-        $this->age = $age;
-        $this->LUKY = $luky;
+    public function getRuleAge(int $age = 18, int $edu_roll = 0, int $luky = 0, int $luky2 = 0){
         $return = [];
         switch ($age) {
             case $age < 20:
                 $this->EDU -= 5;
                 if ($luky2 > $luky) {
-                    $this->LUKY = $luky2;
+                    $this->Luck = $luky2;
                 }
                 $return['STR&SIZ'] = '-5';
                 break;
