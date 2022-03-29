@@ -31,7 +31,7 @@ class RoteEnt extends Entity
                 'delete_at' => $this->delete_at,
             ];
         }else{
-            $data = $this->$_field;
+            $data = $this->$field;
         }
         return $data;
     }

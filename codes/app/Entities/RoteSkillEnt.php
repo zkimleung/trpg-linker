@@ -197,7 +197,6 @@ class RoteSkillEnt extends Entity
                     foreach($list as $kk => $ii){
                         if(isset($this->$skill_type)) {
                             if (isset($this->$skill_type[$key])){
-                                $value += $this->$skill_type[$key];
                                 $list[$kk] = [$key => $value];
                                 $count--;
                                 break 1;
