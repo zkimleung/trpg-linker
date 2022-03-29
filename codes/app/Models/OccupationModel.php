@@ -5,6 +5,8 @@ use \App\Entities\RoteAttrEnt;
 
 class OccupationModel
 {
+    const LIMIT = 20;
+
     private $mongo = null;
     protected $table = "occupation";
     private $attrs = null;
@@ -24,10 +26,19 @@ class OccupationModel
         $this->mongo = (new MongoDB\Client($host))->$db->$table;
     }
 
-    public function getOcuptions()
+    public function getOcuptions(int $page = 1, int $limit = self::LIMIT)
     {
-        return [];
-        $doc = $this->mongo->find();
+        $no_limit = ($page - 1) * $limit + 1;
+
+        $doc = $this->mongo->find(
+            [
+                'no' => ['$gt' => $no_limit]
+            ],
+            [
+                'limit' => $limit,
+                'sort' => ['no' => 1]
+            ]
+        );
         return $doc;
     }
 

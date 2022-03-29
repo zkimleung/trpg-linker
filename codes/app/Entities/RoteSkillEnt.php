@@ -183,24 +183,33 @@ class RoteSkillEnt extends Entity
 
         if ($skill_type == 'knowledge_list'){
             foreach ($adds as $key => $value) {
-                $count++;
-                $kk = "knl". $count; 
-                $list[$kk] = [$key => $value];
+                if (is_int($value)) {
+                    $count++;
+                    $kk = "knl". $count;
+                    $list[$kk] = [$key => $value];
+                }else{
+                    $list[$key] = $value;
+                }
             }
         }else{
             foreach ($adds as $key => $value) {
-                foreach($list as $kk => $ii){
-                    if(isset($this->$skill_type) && empty($ii) ) {
-                        if (isset($this->$skill_type[$key])){
-                            $list[$kk] = [$key => $value];
-                            $count--;
-                            break 1;
-                        }elseif($skill_type == 'language_list'){
-                            $list[$kk] = [$key => $value];
-                            $count--;
-                            break 1;
+                if (is_int($value)) {
+                    foreach($list as $kk => $ii){
+                        if(isset($this->$skill_type)) {
+                            if (isset($this->$skill_type[$key])){
+                                $value += $this->$skill_type[$key];
+                                $list[$kk] = [$key => $value];
+                                $count--;
+                                break 1;
+                            }elseif($skill_type == 'language_list'){
+                                $list[$kk][$key] += $value;
+                                $count--;
+                                break 1;
+                            }
                         }
                     }
+                }else{
+                    $list[$key] = $value;
                 }
                 if ($count == 0){
                     break;

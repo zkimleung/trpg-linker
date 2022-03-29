@@ -11,7 +11,6 @@ use \App\Entities\RoteProfileEnt;
 
 use \App\Models\RoteModel;
 use \App\Models\SkillTreeModel;
-use \App\Models\OccupationModel;
 
 
 class Rote extends BaseController
@@ -102,7 +101,6 @@ class Rote extends BaseController
             return $this->failResourceExists($description);
         }
         $rote->id = (string) $id;
-        $ocpMod = new OccupationModel();
         return $this->respondCreated([
             "id" => (string) $id,
             "rote" => $rote,
@@ -112,19 +110,32 @@ class Rote extends BaseController
 
     public function update(string $id = '')
     {
-        $data = $this->request->getJSON(true);
-
-        $attrs = new RoteAttrEnt($data['attribute']);
-        $skill = new RoteSkillEnt($data['skill']);
-        $profile = new RoteProfileEnt($data['profile']);
-        //封装角色
-        $rote = new RoteEnt();
-        $rote->attribute = $attrs;
-        $rote->skill = $skill;
-        $rote->profile = $profile;
-        $rote->fill();
 
         $roteMod= new RoteModel();
+        $rote = $roteMod->getOne($id);
+        if (!$rote){
+            $this->failNotFound('找不到角色');
+        }
+
+        $data = $this->request->getJSON();
+        
+        $attr = new RoteAttrEnt($data->attribute);
+        foreach ($data->attribute as $a => $v){
+            $rote->attribute->$a += $attr->$v;
+        }
+        
+        $skill = new RoteAttrEnt($data->skill);
+        foreach ($data->skill as $s => $v){
+            if (is_int($skill->$s)){
+                $rote->skill->$s += $skill->$s;
+            }else{
+                foreach ($skill->$s as $type => $v) {
+                    $rote->skill->$s[$type] = $v;
+                }
+            }
+        }
+
+        $roteMod->saveOne($rote);
         return $this->respond($rote, 200);
     }
 
@@ -158,40 +169,40 @@ class Rote extends BaseController
         $rote->attribute->MOV = $attr->getAttrDetails('MOV')['origin'];
         $rote->attribute->Sanity = $attr->getAttrDetails('Sanity')['origin'];
         $roteMod->saveOne($rote,$data->id);
-
-        $ocp_mod = new OccupationModel();
-        $res = $ocp_mod->getOcuptions();
+        
         return $this->respond([
-            'occupation_list' => $res,
             'attribute' => $attr
         ],200);
     }
 
-    public function test_funx()
+    public function test_funx(string $id = '')
     {
-        $data = $this->request->getJSON();
 
         $roteMod= new RoteModel();
-        $rote = $roteMod->getOne($data->id);
+        $rote = $roteMod->getOne($id);
         if (!$rote){
             $this->failNotFound('找不到角色');
         }
-        $attr = new RoteAttrEnt((array) $rote->attribute);
-        foreach ($data->attribute as $a => $v){
-            $rote->attribute->$a = $v;
-            $attr->$a = $v;
-        }
-        $rote->attribute->HP = $attr->getAttrDetails('HP')['origin'];
-        $rote->attribute->MP = $attr->getAttrDetails('MP')['origin'];
-        $rote->attribute->MOV = $attr->getAttrDetails('MOV')['origin'];
-        $rote->attribute->Sanity = $attr->getAttrDetails('Sanity')['origin'];
-        $roteMod->saveOne($rote,$data->id);
 
-        $ocp_mod = new OccupationModel();
-        $res = $ocp_mod->getOcuptions();
-        return $this->respond([
-            'occupation_list' => $res,
-            'attribute' => $attr
-        ],200);
+        $data = $this->request->getJSON(true);
+        
+        $attr = new RoteAttrEnt($data['attribute']);
+        foreach ($data['attribute'] as $a => $v){
+            $rote->attribute->$a += $attr->$a;
+        }
+        
+        $skill = new RoteSkillEnt($data['skill']);
+        foreach ($data['skill'] as $s => $v){
+            if (is_int($skill->$s)){
+                $rote->skill->$s += $skill->$s;
+            }elseif(is_array($v)){
+                log_message("debug",$s);
+                log_message("debug",json_encode($v));
+                // $rote->skill->$s = $skill->fillSkillList($s,$v);
+                // log_message("debug",json_encode($skill->fillSkillList($s,$v)));
+            }
+        }
+        
+        return $this->respond($rote, 200);
     }
 }

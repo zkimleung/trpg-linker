@@ -20,15 +20,19 @@ class RoteEnt extends Entity
         'profile' => 'json'
     ];
 
-    public function getEntsData(){
-        $data = [
-            'attribute' => $this->attribute,
-            'skill' => $this->skill,
-            'profile' => $this->profile,
-            'update_at' => $this->update_at,
-            'create_at' => $this->create_at,
-            'delete_at' => $this->delete_at,
-        ];
+    public function getEntsData(string $field = ""){
+        if (empty($field) || $field == ""){
+            $data = [
+                'attribute' => $this->attribute,
+                'skill' => $this->skill,
+                'profile' => $this->profile,
+                'update_at' => $this->update_at,
+                'create_at' => $this->create_at,
+                'delete_at' => $this->delete_at,
+            ];
+        }else{
+            $data = $this->$_field;
+        }
         return $data;
     }
 
