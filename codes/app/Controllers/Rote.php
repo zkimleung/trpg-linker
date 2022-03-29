@@ -117,22 +117,26 @@ class Rote extends BaseController
             $this->failNotFound('找不到角色');
         }
 
-        $data = $this->request->getJSON();
+        $data = $this->request->getJSON(true);
         
-        $attr = new RoteAttrEnt($data->attribute);
-        foreach ($data->attribute as $a => $v){
-            $rote->attribute->$a += $attr->$v;
+        $attr = new RoteAttrEnt($data['attribute']);
+        foreach ($data['attribute'] as $a => $v){
+            $rote->attribute->$a = $attr->$a;
         }
         
-        $skill = new RoteAttrEnt($data->skill);
-        foreach ($data->skill as $s => $v){
+        $skill = new RoteSkillEnt($data['skill']);
+        foreach ($data['skill'] as $s => $v){
             if (is_int($skill->$s)){
-                $rote->skill->$s += $skill->$s;
-            }else{
-                foreach ($skill->$s as $type => $v) {
-                    $rote->skill->$s[$type] = $v;
-                }
+                $rote->skill->$s = $skill->$s;
+            }elseif(is_array($v)){
+                $list = $skill->fillSkillList($s,$v);
+                $rote->skill->$s = $list;
             }
+        }
+
+        $profile = new RoteProfileEnt($data['profile']);
+        foreach ($data['profile'] as $p => $v){
+            $rote->profile->$p = $profile->$p;
         }
 
         $roteMod->saveOne($rote);
@@ -188,21 +192,25 @@ class Rote extends BaseController
         
         $attr = new RoteAttrEnt($data['attribute']);
         foreach ($data['attribute'] as $a => $v){
-            $rote->attribute->$a += $attr->$a;
+            $rote->attribute->$a = $attr->$a;
         }
         
         $skill = new RoteSkillEnt($data['skill']);
         foreach ($data['skill'] as $s => $v){
             if (is_int($skill->$s)){
-                $rote->skill->$s += $skill->$s;
+                $rote->skill->$s = $skill->$s;
             }elseif(is_array($v)){
-                log_message("debug",$s);
-                log_message("debug",json_encode($v));
-                // $rote->skill->$s = $skill->fillSkillList($s,$v);
-                // log_message("debug",json_encode($skill->fillSkillList($s,$v)));
+                $list = $skill->fillSkillList($s,$v);
+                $rote->skill->$s = $list;
             }
         }
-        
+
+        $profile = new RoteProfileEnt($data['profile']);
+        foreach ($data['profile'] as $p => $v){
+            $rote->profile->$p = $profile->$p;
+        }
+
+        $roteMod->saveOne($rote);
         return $this->respond($rote, 200);
     }
 }
