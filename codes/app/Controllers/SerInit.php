@@ -44,8 +44,7 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
         $this->set_db();
         $flag = $this->DB->config->findOne();
         if (!$flag) {
-            echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
-            // echo anchor('SerInit/init_set', '初始化服务', 'title="进入初始化~"');
+            echo anchor('SerInit/init_set', '初始化', 'title="进入初始化~"');
         }else{
             echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
         }
@@ -69,9 +68,11 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
                 }
             }
         }
-
-        // echo view('welcome_message');
-        return $this->respond($res,200);
+        
+        $Parsedown = new Parsedown();
+        echo view('header',['intor'=>$Parsedown->text("## ......初始化完成,现在你可以 ↓")]);
+        echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
+        echo view('footer');
     }
 
     private function get_occupation_data(){

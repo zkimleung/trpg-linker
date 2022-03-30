@@ -175,16 +175,28 @@
 			/* border-radius: .25em; */
 			padding-bottom: .75em;
 			margin-bottom: 1em;
+			list-style: lao;
 		}
 		
 		.pagination {
 			width:fit-content;
 			display: flex;
 			flex-direction: row;
+			list-style: none;
 		}
 
 		.pagination li {
+			width: 100px;
+		}
+
+		.contents a {
 			width: 90px;
+			height: 25px;
+			border: 1px solid gray;
+			border-radius: 10px;
+			text-align: center;
+			display: block;
+    		margin: 5px;
 		}
 		
 		@media (max-width: 629px) {
