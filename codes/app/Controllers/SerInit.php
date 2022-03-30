@@ -13,7 +13,8 @@ class SerInit extends BaseController
 private $collections = [ //集合名称 =》初始化数据量，0为不需要初始化
         'rotes' => 0,
         'skill_tree' => 1,
-        'occupation' => 114
+        'occupation' => 114,
+        'config' => 0
     ];
 
     private function set_db(){
@@ -29,6 +30,30 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
     }
 
     public function index()
+    {        
+        $path = "../writable/uploads/introduce.md";
+        $file = new \CodeIgniter\Files\File($path);
+        $text = $file->openFile('r');
+        $Parsedown = new Parsedown();
+        $intor = "";
+        while(!$text->eof()) {
+            $intor .= $Parsedown->text($text->fgets());
+        }
+        echo view('header',['intor'=>$intor]);
+
+        $this->set_db();
+        $flag = $this->DB->config->findOne();
+        if (!$flag) {
+            echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
+            // echo anchor('SerInit/init_set', '初始化服务', 'title="进入初始化~"');
+        }else{
+            echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
+        }
+
+        echo view('footer');
+    }
+
+    public function init_set()
     {
         $this->set_db();
         foreach ($this->collections as $col => $is_int){
@@ -45,6 +70,7 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
             }
         }
 
+        // echo view('welcome_message');
         return $this->respond($res,200);
     }
 

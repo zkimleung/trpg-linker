@@ -49,4 +49,8 @@ class OccupationModel
         ];
     }
 
+    public function count(){
+        return $this->mongo->count();
+    }
+
 }
