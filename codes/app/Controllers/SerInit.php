@@ -46,7 +46,7 @@ class SerInit extends BaseController
         echo view('header',['intor'=>$intor]);
 
         $this->set_db();
-        $flag = $this->DB->config->findOne();
+        $flag = $this->getConfig();
 
         helper('form');
         if (!$flag) {
@@ -54,22 +54,21 @@ class SerInit extends BaseController
             echo form_input([
                 'name'      => 'token_str',
                 'id'        => 'token_str',
-                'placeholder '     => '输入口令',
+                'placeholder '     => '初始化口令',
                 'maxlength' => '100'
             ]);
             echo form_submit('init', '进入初始化~');
             echo form_close();
         }else{
-            echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
-            
+            echo anchor('Ocps/lists/1', '职业表', 'title="查看职业表"');
             echo form_open('WebRote');
             echo form_input([
                 'name'      => 'token_str',
                 'id'        => 'token_str',
-                'placeholder '     => '初始化口令',
+                'placeholder '     => '输入口令',
                 'maxlength' => '100'
             ]);
-            echo form_submit('rote_check', '查找人物卡');
+            echo form_submit('rote_check', '查看人物卡');
             echo form_close();
         }
 
@@ -109,10 +108,25 @@ class SerInit extends BaseController
         echo view('footer');
     }
 
-    public function test_session(){
-        $this->set_db();
-        $data = $this->session->get();
-        var_dump($data);
+    private function getConfig(){
+        
+        $token = $this->session->get('token');
+        if ($token){
+            $flag = $this->DB->config->findOne([
+                "token" => $token
+            ]);
+        }else{
+            $flag = $this->DB->config->findOne([
+                "useing" => true
+            ]);
+            if ($flag){
+                $this->session->set([
+                    'token'  => $flag->token,
+                    'logged_in' => TRUE
+                ]);
+            }
+        }
+        return $flag;
     }
 
     private function get_occupation_data(){

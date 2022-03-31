@@ -27,7 +27,7 @@ class WebRote extends BaseController
     {
         $token = $this->session->get('token');
         $Parsedown = new Parsedown();
-        echo view('header',["intor" => $Parsedown->text("# 人物卡")]);
+        echo view('header',["intor" => $Parsedown->text("# 人物卡 \n > 以下调查员正在逼近或者已经疯狂......")]);
         $rote = new RoteModel();
         $list = $rote->getAll();
         $data = [];
@@ -51,7 +51,7 @@ class WebRote extends BaseController
         echo view('footer');
     }
 
-    public function new_1()
+    public function new()
     {
         //技能树
         $tree_mod = new SkillTreeModel();
@@ -59,7 +59,7 @@ class WebRote extends BaseController
         return $this->respond($data, 200);
     }
 
-    public function edit_1(string $id = '')
+    public function edit(string $id = '')
     {
         //查人物
         $rote = new RoteModel();
@@ -70,7 +70,7 @@ class WebRote extends BaseController
         return $this->respond($data, 200);
     }
 
-    public function show_1(string $id = '')
+    public function show(string $id = '')
     {
         //查人物
         $rote = new RoteModel();
@@ -81,7 +81,7 @@ class WebRote extends BaseController
         return $this->respond($data, 200);
     }
 
-    public function create_1()
+    public function create()
     {
         $data = $this->request->getJSON(true);
         //初始化属性点
@@ -135,7 +135,7 @@ class WebRote extends BaseController
         ], 201);
     }
 
-    public function update_1(string $id = '')
+    public function update(string $id = '')
     {
 
         $roteMod= new RoteModel();
@@ -170,7 +170,7 @@ class WebRote extends BaseController
         return $this->respond($rote, 200);
     }
 
-    public function delete_1(string $id = '')
+    public function delete(string $id = '')
     {
         $rote = new RoteModel();
         $data = $rote->getOne($id);
@@ -181,7 +181,7 @@ class WebRote extends BaseController
         $this->respondDeleted($data);
     }
 
-    public function attr_upgrade_1()
+    public function attr_upgrade()
     {
         $data = $this->request->getJSON();
 
