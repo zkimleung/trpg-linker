@@ -17,15 +17,21 @@ class WebRote extends BaseController
 {
     use \CodeIgniter\API\ResponseTrait;
 
+    private $session = null;
+
+    public function __construct(){
+        $this->session = session();
+    }
+
     public function index()
     {
+        $token = $this->session->get('token');
         $Parsedown = new Parsedown();
         echo view('header',["intor" => $Parsedown->text("# 人物卡")]);
         $rote = new RoteModel();
         $list = $rote->getAll();
         $data = [];
         if ($list){
-
             foreach ($list as $doc){
                 $id = (string) $doc->_id;
                 $data[$id] = [
@@ -42,7 +48,6 @@ class WebRote extends BaseController
                 "class" => "ocps"
             ]);
         }
-
         echo view('footer');
     }
 

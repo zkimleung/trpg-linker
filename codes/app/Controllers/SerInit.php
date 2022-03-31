@@ -7,14 +7,17 @@ use Config;
 
 class SerInit extends BaseController
 {
+    const TOKEN_ADD = 'TRPG-LINKER';
     use \CodeIgniter\API\ResponseTrait;
     private $DB = null;
+    private $session = null;
 
-private $collections = [ //集合名称 =》初始化数据量，0为不需要初始化
+    private $collections = [ //集合名称 =》初始化数据量，0为不需要初始化
         'rotes' => 0,
         'skill_tree' => 1,
         'occupation' => 114,
-        'config' => 0
+        'config' => 0,
+        'trpg_logs' => 0
     ];
 
     private function set_db(){
@@ -27,6 +30,7 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
             config('Database')->$grp['hostname']
         );
         $this->DB = (new MongoDB\Client($host))->$db;
+        $this->session = session();
     }
 
     public function index()
@@ -43,10 +47,30 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
 
         $this->set_db();
         $flag = $this->DB->config->findOne();
+
+        helper('form');
         if (!$flag) {
-            echo anchor('SerInit/init_set', '初始化', 'title="进入初始化~"');
+            echo form_open('SerInit/init_set');
+            echo form_input([
+                'name'      => 'token_str',
+                'id'        => 'token_str',
+                'placeholder '     => '输入口令',
+                'maxlength' => '100'
+            ]);
+            echo form_submit('init', '进入初始化~');
+            echo form_close();
         }else{
             echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
+            
+            echo form_open('WebRote');
+            echo form_input([
+                'name'      => 'token_str',
+                'id'        => 'token_str',
+                'placeholder '     => '初始化口令',
+                'maxlength' => '100'
+            ]);
+            echo form_submit('rote_check', '查找人物卡');
+            echo form_close();
         }
 
         echo view('footer');
@@ -54,6 +78,7 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
 
     public function init_set()
     {
+        $token_str = $this->request->getVar('token_str').self::TOKEN_ADD;
         $this->set_db();
         foreach ($this->collections as $col => $is_int){
             $this->DB->dropCollection($col);
@@ -68,11 +93,26 @@ private $collections = [ //集合名称 =》初始化数据量，0为不需要�
                 }
             }
         }
-        
+
+        $data = $this->DB->config->insertOne([
+            "install_flag" => 1,
+            "token" => password_hash($token_str, PASSWORD_DEFAULT),
+            "useing" => true
+        ]);
+        $this->session->set([
+            'token'  => password_hash($token_str, PASSWORD_DEFAULT),
+            'logged_in' => TRUE
+        ]);
         $Parsedown = new Parsedown();
         echo view('header',['intor'=>$Parsedown->text("## ......初始化完成,现在你可以 ↓")]);
         echo anchor('Ocps/lists/1', '职业列表', 'title="查看职业列表"');
         echo view('footer');
+    }
+
+    public function test_session(){
+        $this->set_db();
+        $data = $this->session->get();
+        var_dump($data);
     }
 
     private function get_occupation_data(){
