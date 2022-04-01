@@ -2,12 +2,6 @@
 # https://hub.docker.com/_/php
 FROM php:7.4-apache
 
-# 将本地代码复制到容器内
-COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
-COPY edit-apache-config /usr/local/bin
-COPY codes/ /var/www/html/
-RUN a2enmod rewrite
-
 # 安装CI4需要的PHP扩展
 RUN cp /etc/apt/sources.list /etc/apt/echosources.list.bck && \
     echo "" > /etc/apt/sources.list && \
@@ -34,6 +28,12 @@ RUN cp /etc/apt/sources.list /etc/apt/echosources.list.bck && \
 RUN rm -r /var/lib/apt/lists/* 
 RUN docker-php-ext-install -j$(nproc) intl
 RUN pecl install mongodb && docker-php-ext-enable mongodb
+
+# 将本地代码复制到容器内
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY edit-apache-config /usr/local/bin
+COPY codes/ /var/www/html/
+RUN a2enmod rewrite
 # 初始化项目扩展
 RUN chown -R www-data:www-data /var/www && cp env .env
 RUN php composer.phar update
