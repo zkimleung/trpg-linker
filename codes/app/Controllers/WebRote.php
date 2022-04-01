@@ -11,6 +11,7 @@ use \App\Entities\RoteProfileEnt;
 
 use \App\Models\RoteModel;
 use \App\Models\SkillTreeModel;
+use \App\Models\OccupationModel;
 
 
 class WebRote extends BaseController
@@ -28,6 +29,18 @@ class WebRote extends BaseController
         $token = $this->session->get('token');
         $Parsedown = new Parsedown();
         echo view('header',["intor" => $Parsedown->text("# 人物卡 \n > 以下调查员正在逼近或者已经疯狂......")]);
+        
+        helper('form');
+        echo form_open('WebRote/search');
+        echo form_input([
+            'name'      => 'id',
+            'id'        => 'rote_id',
+            'placeholder '     => '人物ID',
+            'maxlength' => '100'
+        ]);
+        echo form_submit('rote_check', '查看人物卡');
+        echo form_close();
+
         $rote = new RoteModel();
         $list = $rote->getAll();
         $data = [];
@@ -51,12 +64,21 @@ class WebRote extends BaseController
         echo view('footer');
     }
 
+    public function search() {
+        $id = $this->request->getPost('id');
+        return redirect()->to('/WebRote/'.$id);
+    }
+
     public function new()
     {
-        //技能树
-        $tree_mod = new SkillTreeModel();
-        $data = $tree_mod->getTree();
-        return $this->respond($data, 200);
+        $Parsedown = new Parsedown();
+        echo view('header',["intor" => $Parsedown->text("# 人物创建")]);
+        
+        $ocp_mod = new OccupationModel();
+        $ocps = $ocp_mod->getAll();
+        $data['ocps'] = $ocps;
+
+        echo view("webrote/roteform",$data);
     }
 
     public function edit(string $id = '')
@@ -83,44 +105,36 @@ class WebRote extends BaseController
 
     public function create()
     {
-        $data = $this->request->getJSON(true);
+        $data = $this->request->getPost();
+        //初始化技能点
+        $skill = new RoteSkillEnt();
+        $skill->sycSkillByAttr($data);
+        // //初始化角色背景
+        $profile = new RoteProfileEnt();
+        $profile->name = $data['name'];unset($data['name']);
+        $profile->occupation = intval( $data['ocp']);unset($data['ocp']);
+        $profile->age = intval( $data['age']);
+        $profile->pc = $data['pc'];unset($data['pc']);
+        $profile->sex = $data['sex'];unset($data['sex']);
+        $profile->idiosyncrasy = $profile->sycIndyList();
         //初始化属性点
-        $attrs = new RoteAttrEnt($data['attribute']);
+        $attrs = new RoteAttrEnt($data);
         $attrs->HP = $attrs->getAttrDetails('HP')['origin'];
         $attrs->MP = $attrs->getAttrDetails('MP')['origin'];
         $attrs->MOV = $attrs->getAttrDetails('MOV')['origin'];
         $attrs->Sanity = $attrs->getAttrDetails('Sanity')['origin'];
-        //初始化技能点
-        $tree_mod = new SkillTreeModel();
-        $skill = new RoteSkillEnt();
-        $tree = $tree_mod->getTree();
-        foreach($data['skill'] as $keywork => $obj){
-            if (is_object($tree->$keywork)){
-                $skill->setSkillList($keywork,(array) $tree->$keywork);
-            };
-            if(is_array($obj)){
-                $list = $skill->fillSkillList($keywork,$obj);
-                $skill->$keywork = $list;
-            }else{
-                $skill->$keywork = $obj;
-            }
-        }
-        $skill->sycSkillByAttr($data['attribute']);
-        //初始化角色背景
-        $profile = new RoteProfileEnt($data['profile']);
-        if (empty($profile->idiosyncrasy)){
-            $profile->idiosyncrasy = $profile->sycIndyList();
-        }
+        $attrs->fill();
+
         //根据年龄，返回扣点规则
-        $rule = $attrs->getRuleAge($profile->age,(int) $data['edu_roll'],$attrs->Luck,(int) $data['luky2']);
+        $rule = $attrs->getRuleAge($data['age']);
+        unset($attrs->age);
         //封装角色
         $rote = new RoteEnt();
         $rote->attribute = $attrs;
         $rote->skill = $skill;
         $rote->profile = $profile;
-        $rote->fill();
 
-        // return $this->respond($rule,200);
+        // return $this->respond([$rote,$rule],200);
 
         $roteMod= new RoteModel();
         $id = $roteMod->saveOne($rote);
@@ -128,11 +142,8 @@ class WebRote extends BaseController
             return $this->failResourceExists($description);
         }
         $rote->id = (string) $id;
-        return $this->respondCreated([
-            "id" => (string) $id,
-            "rote" => $rote,
-            "upgrade_rule" => $rule
-        ], 201);
+        
+        return redirect()->to('/WebRote/'.$id);
     }
 
     public function update(string $id = '')
@@ -167,7 +178,8 @@ class WebRote extends BaseController
         }
 
         $roteMod->saveOne($rote);
-        return $this->respond($rote, 200);
+        
+        return redirect()->to('/WebRote/'.$id);
     }
 
     public function delete(string $id = '')
