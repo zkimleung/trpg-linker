@@ -38,7 +38,7 @@ class WebRote extends BaseController
             'placeholder '     => '人物ID',
             'maxlength' => '100'
         ]);
-        echo form_submit('rote_check', '查看人物卡');
+        echo form_submit('rote_check', '查看详细人物信息');
         echo form_close();
 
         $rote = new RoteModel();
@@ -155,28 +155,6 @@ class WebRote extends BaseController
             $this->failNotFound('找不到角色');
         }
 
-        $data = $this->request->getJSON(true);
-        
-        $attr = new RoteAttrEnt($data['attribute']);
-        foreach ($data['attribute'] as $a => $v){
-            $rote->attribute->$a = $attr->$a;
-        }
-        
-        $skill = new RoteSkillEnt($data['skill']);
-        foreach ($data['skill'] as $s => $v){
-            if (is_int($skill->$s)){
-                $rote->skill->$s = $skill->$s;
-            }elseif(is_array($v)){
-                $list = $skill->fillSkillList($s,$v);
-                $rote->skill->$s = $list;
-            }
-        }
-
-        $profile = new RoteProfileEnt($data['profile']);
-        foreach ($data['profile'] as $p => $v){
-            $rote->profile->$p = $profile->$p;
-        }
-
         $roteMod->saveOne($rote);
         
         return redirect()->to('/WebRote/'.$id);
@@ -190,7 +168,7 @@ class WebRote extends BaseController
            return  $this->failNotFound('找不到角色');
         }
         $res = $rote->delOne();
-        $this->respondDeleted($data);
+        return redirect()->to('/WebRote');
     }
 
     public function attr_upgrade()
@@ -221,12 +199,6 @@ class WebRote extends BaseController
     public function test_funx(string $id = "")
     {
         return $id;
-
-        // $roteMod= new RoteModel();
-        // $rote = $roteMod->getOne($id);
-        // if (!$rote){
-        //     $this->failNotFound('找不到角色');
-        // }
         return $this->respond($rote, 200);
     }
 }

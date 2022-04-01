@@ -8,9 +8,6 @@ class RoteModel
 {
     private $mongo = null;
     protected $table = "rotes";
-    protected $allowedFields =[
-        'profile','assets','skill','attribute'
-    ];
     protected $returnType    = 'App\Entities\RoteEnt';
     protected $useTimestamps = true;
     
