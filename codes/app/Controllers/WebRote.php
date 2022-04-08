@@ -42,7 +42,7 @@ class WebRote extends BaseController
         echo form_close();
 
         $rote = new RoteModel();
-        $list = $rote->getAll();
+        $list = $rote->getAll($token);
         $data = [];
         if ($list){
             foreach ($list as $doc){
@@ -64,7 +64,8 @@ class WebRote extends BaseController
         echo view('footer');
     }
 
-    public function search() {
+    public function search() 
+    {
         $id = $this->request->getPost('id');
         return redirect()->to('/WebRote/'.$id);
     }
@@ -117,6 +118,8 @@ class WebRote extends BaseController
         $profile->pc = $data['pc'];unset($data['pc']);
         $profile->sex = $data['sex'];unset($data['sex']);
         $profile->idiosyncrasy = $profile->sycIndyList();
+        $profile->token = $this->session->get('token');
+
         //初始化属性点
         $attrs = new RoteAttrEnt($data);
         $attrs->HP = $attrs->getAttrDetails('HP')['origin'];
@@ -133,8 +136,10 @@ class WebRote extends BaseController
         $rote->attribute = $attrs;
         $rote->skill = $skill;
         $rote->profile = $profile;
-
-        // return $this->respond([$rote,$rule],200);
+        $file = $this->request->getFile("avatar");
+        $name = $file->getName();
+        echo WRITEPATH.'uploads/'.$name;
+        return $this->respond($file,200);
 
         $roteMod= new RoteModel();
         $id = $roteMod->saveOne($rote);
@@ -198,7 +203,9 @@ class WebRote extends BaseController
 
     public function test_funx(string $id = "")
     {
-        return $id;
-        return $this->respond($rote, 200);
+        $token = $this->session->get("token");
+        $ocp_mod = new OccupationModel();
+        $ocps = $ocp_mod->getAll($token);
+        return $this->respond($ocps,200);
     }
 }

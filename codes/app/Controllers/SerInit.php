@@ -17,7 +17,8 @@ class SerInit extends BaseController
         'skill_tree' => 1,
         'occupation' => 114,
         'config' => 0,
-        'trpg_logs' => 0
+        'coc_mod' => 0,
+        'chain' => 0
     ];
 
     private function set_db(){
@@ -89,6 +90,7 @@ class SerInit extends BaseController
         $data = $this->DB->config->insertOne([
             "install_flag" => 1,
             "token" => password_hash($token_str, PASSWORD_DEFAULT),
+            "latest_chain" => base64_encode(0),
             "useing" => true
         ]);
         $this->session->set([

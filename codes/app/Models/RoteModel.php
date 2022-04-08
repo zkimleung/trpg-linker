@@ -30,8 +30,13 @@ class RoteModel
         $this->now = Time::now('Asia/Shanghai', 'zh-CN');
     }
 
-    public function getAll()
+    public function getAll(string $token="")
     {
+        if ($token != ""){
+            return $this->mongo->find([
+                "profile.token" => $token
+            ]);
+        }
         return $this->mongo->find();
     }
 

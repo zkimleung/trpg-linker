@@ -1,5 +1,7 @@
-<form action="/WebRote/create" method="post" class="rote">
-
+<script src="https://unpkg.com/vue@next"></script>
+<form action="/WebRote/create" method="post" class="rote" enctype="multipart/form-data">
+    
+    人物头像：<input type="file" name="avatar" id="avatar">
     人物名称：<input type="text" name="name">
     年龄：<input type="text" name="age">
     力量：<input type="text" name="STR">
@@ -31,5 +33,10 @@
 
     PC: <input type="text" name="pc">
 
-    <button type="submit">创建</button>
+    <!-- <button type="submit" value="upload">创建</button> -->
+    <input type="submit" value="创建">
 </form>
+
+<script>
+    
+</script>
