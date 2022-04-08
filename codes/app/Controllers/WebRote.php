@@ -80,6 +80,8 @@ class WebRote extends BaseController
         $data['ocps'] = $ocps;
 
         echo view("webrote/roteform",$data);
+
+        echo view('footer');
     }
 
     public function edit(string $id = '')
@@ -101,7 +103,11 @@ class WebRote extends BaseController
         if (!$data){
            return  $this->failNotFound('找不到角色');
         }
-        return $this->respond($data, 200);
+
+        $Parsedown = new Parsedown();
+        echo view('header',["intor" => $Parsedown->text("# 人物档案")]);
+        echo view("webrote/info",(array) $data);
+        echo view('footer');
     }
 
     public function create()
