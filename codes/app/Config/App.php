@@ -23,7 +23,8 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $baseURL = 'http://codes.test:8080/';
+    // public $baseURL = 'http://codes.test:8080/';
+    public $baseURL = 'https://trpg.weave-nonsense.top/';
 
     /**
      * --------------------------------------------------------------------------
