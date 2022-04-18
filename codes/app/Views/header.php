@@ -198,6 +198,12 @@
 			display: block;
     		margin: 5px;
 		}
+
+		.rote {
+			display: flex;
+			justify-content:center;
+    		flex-direction: column;
+		}
 		
 		@media (max-width: 629px) {
 			header ul {

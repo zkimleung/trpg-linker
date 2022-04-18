@@ -38,4 +38,11 @@ class Ocps extends BaseController
         echo $pager->makeLinks($page, 20, $count,'default_full',3);
         echo view('footer');
     }
+
+    public function test_view(){
+        $Parsedown = new Parsedown();
+        echo view('header',["intor" => $Parsedown->text("# 人物创建")]);
+
+        echo view("webrote/roteform");
+    }
 }

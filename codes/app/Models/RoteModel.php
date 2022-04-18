@@ -8,9 +8,6 @@ class RoteModel
 {
     private $mongo = null;
     protected $table = "rotes";
-    protected $allowedFields =[
-        'profile','assets','skill','attribute'
-    ];
     protected $returnType    = 'App\Entities\RoteEnt';
     protected $useTimestamps = true;
     
@@ -33,8 +30,13 @@ class RoteModel
         $this->now = Time::now('Asia/Shanghai', 'zh-CN');
     }
 
-    public function getAll()
+    public function getAll(string $token="")
     {
+        if ($token != ""){
+            return $this->mongo->find([
+                "profile.token" => $token
+            ]);
+        }
         return $this->mongo->find();
     }
 

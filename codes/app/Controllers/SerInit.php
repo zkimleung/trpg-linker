@@ -17,7 +17,8 @@ class SerInit extends BaseController
         'skill_tree' => 1,
         'occupation' => 114,
         'config' => 0,
-        'trpg_logs' => 0
+        'coc_mod' => 0,
+        'chain' => 0
     ];
 
     private function set_db(){
@@ -61,15 +62,8 @@ class SerInit extends BaseController
             echo form_close();
         }else{
             echo anchor('Ocps/lists/1', '职业表', 'title="查看职业表"');
-            echo form_open('WebRote');
-            echo form_input([
-                'name'      => 'token_str',
-                'id'        => 'token_str',
-                'placeholder '     => '输入口令',
-                'maxlength' => '100'
-            ]);
-            echo form_submit('rote_check', '查看人物卡');
-            echo form_close();
+            echo anchor('WebRote', '人物卡', 'title="查看任务卡"');
+            echo anchor('WebRote/new', '人物创建', 'title="创建任务卡"');
         }
 
         echo view('footer');
@@ -96,6 +90,7 @@ class SerInit extends BaseController
         $data = $this->DB->config->insertOne([
             "install_flag" => 1,
             "token" => password_hash($token_str, PASSWORD_DEFAULT),
+            "latest_chain" => base64_encode(0),
             "useing" => true
         ]);
         $this->session->set([

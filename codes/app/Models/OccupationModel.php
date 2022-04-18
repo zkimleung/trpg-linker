@@ -26,6 +26,12 @@ class OccupationModel
         $this->mongo = (new MongoDB\Client($host))->$db->$table;
     }
 
+    public function getAll()
+    {
+        $doc = $this->mongo->find();
+        return $doc;
+    }
+
     public function getOcuptions(int $page = 1, int $limit = self::LIMIT)
     {
         $no_limit = ($page - 1) * $limit + 1;
